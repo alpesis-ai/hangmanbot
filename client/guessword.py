@@ -9,7 +9,7 @@ import patterns
 # 1. filling in the vowels
 # 2. checking against the words from a dictionary
 
-WORDDICT = dictionary.split_dict()
+#WORDDICT = dictionary.split_dict()
 
 def guess_word(client, sessionId, wordLength, unknownLetters):
 
@@ -45,7 +45,7 @@ def guess_word(client, sessionId, wordLength, unknownLetters):
 
         guessedLetters = correctLetters + incorrectLetters
         pattern = patterns.create_pattern(guess['data']['word'], guessedLetters)
-        matches = dictionary.search_pattern(WORDDICT, guess['data']['word'], pattern)
+        matches = dictionary.search_pattern(settings.WORDDICT, guess['data']['word'], pattern)
 
         if len(matches) > 0:
             matches = deque(matches)
@@ -88,7 +88,7 @@ def guess_word(client, sessionId, wordLength, unknownLetters):
                             print "incorrectLetters: %s" % incorrectLetters
                             print "correctLetters: %s" % correctLetters
                             print "END"
-                            return unknownLetters
+                            return unknownLetters, guess['data']['word']
 
                         elif unknownLetters < preUnknownLetters:
                             correctLetters.append(letter)
@@ -119,7 +119,7 @@ def guess_word(client, sessionId, wordLength, unknownLetters):
                         # if guess > 10, make unknownLetters = 0 to stop the loop
                         # return the value to stop the guess
                         unknownLetters = 0
-                        return unknownLetters
+                        return unknownLetters, guess['data']['word']
         else:
             nonGuessedLetters = [letter for letter in settings.ALPHABET if letter not in guessedLetters]
             for letter in nonGuessedLetters:
@@ -157,7 +157,7 @@ def guess_word(client, sessionId, wordLength, unknownLetters):
                         print "incorrectLetters: %s" % incorrectLetters
                         print "correctLetters: %s" % correctLetters
                         print "END"
-                        return unknownLetters
+                        return unknownLetters, guess['data']['word']
 
                     elif unknownLetters < preUnknownLetters:
                         correctLetters.append(letter.lower())
@@ -188,4 +188,4 @@ def guess_word(client, sessionId, wordLength, unknownLetters):
                     # if guess > 10, make unknownLetters = 0 to stop the loop
                     # return the value to stop the guess
                     unknownLetters = 0
-                    return unknownLetters
+                    return unknownLetters, guess['data']['word']

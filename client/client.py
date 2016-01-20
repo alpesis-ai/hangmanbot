@@ -12,6 +12,8 @@ import nextword
 import guessword
 import getresult
 
+import log.files
+
 class HangmanClient(object):
 
     def __init__(self, requestUrl, playerId):
@@ -56,6 +58,7 @@ def main():
 
         counter = 1
         while counter <= session['data']['numberOfWordsToGuess']:
+
             print "#####################################"
             print "# COUNTER: %s" % counter
             print "#####################################"
@@ -64,11 +67,18 @@ def main():
             sessionId = session['sessionId']
             word, wordLength, unknownLetters = nextword.next_word(hangman_client, sessionId)
             if unknownLetters > 0:
-                unknownLetters = guessword.guess_word(hangman_client, sessionId, wordLength, unknownLetters)
+                unknownLetters, guessedWord = guessword.guess_word(hangman_client, sessionId, wordLength, unknownLetters)
+                print unknownLetters, guessedWord
+                log.files.log_words(guessedWord)
                 if unknownLetters == 0:
                     result = getresult.get_result(hangman_client, session['sessionId'])
                     counter += 1
                     continue
+
+        #best_score = get_best_score()
+        #if result['data']['score'] > bestScore:
+        #    save_score()
+        #    submit_result()
 
     else:
         raise session['message']
