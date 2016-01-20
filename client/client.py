@@ -1,3 +1,4 @@
+import time
 import json
 from collections import deque
 
@@ -9,6 +10,7 @@ import patterns
 
 import nextword
 import guessword
+import getresult
 
 class HangmanClient(object):
 
@@ -52,13 +54,19 @@ def main():
     session = hangman_client.start_game()
     if session['message'] == 'THE GAME IS ON':
 
-        counter = 0
-        while counter < session['data']['numberOfWordsToGuess']:
+        counter = 1
+        while counter <= session['data']['numberOfWordsToGuess']:
+            print "#####################################"
+            print "# COUNTER: %s" % counter
+            print "#####################################"
+            time.sleep(1)
+
             sessionId = session['sessionId']
             word, wordLength, unknownLetters = nextword.next_word(hangman_client, sessionId)
             if unknownLetters > 0:
                 unknownLetters = guessword.guess_word(hangman_client, sessionId, wordLength, unknownLetters)
                 if unknownLetters == 0:
+                    result = getresult.get_result(hangman_client, session['sessionId'])
                     counter += 1
                     continue
 
