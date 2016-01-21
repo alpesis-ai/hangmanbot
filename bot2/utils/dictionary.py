@@ -1,6 +1,3 @@
-import re
-
-import settings
 
 def split_dict(dictpath):
 
@@ -35,31 +32,3 @@ def split_dicts(dictpaths):
 
     return words
 
-def count_frequency(words):
-    """
-    >>> count_frequnecy(wordDict[10])
-    """
-
-    letterFreq = {}
-
-    for word in words:
-        for letter in word:
-            if letter not in letterFreq.keys():
-                letterFreq[letter] = 1
-            else:
-                letterFreq[letter] += 1
-
-    letterFreq = sorted(letterFreq.items(), key=lambda x: x[1], reverse=True)
-    return letterFreq
-
-def search_pattern(wordDict, guessWord, pattern):
-
-    matches = []
-
-    wordLength = len(guessWord)
-    if wordLength in wordDict.keys():
-        for word in wordDict[wordLength]:
-            match = re.search(str(pattern), word)
-            matches.append(match.group()) if match else matches
- 
-    return matches
