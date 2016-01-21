@@ -15,14 +15,21 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQUEST_URL = "https://strikingly-hangman.herokuapp.com/game/on"
 PLAYER_ID = "kwailamchan@hotmail.com"
 
+#------------------------------------------------------------------#
 # guess
-DICT_PATH = PROJECT_ROOT + "/client/files/wordsEn.txt"
-EXTRA_DICT_PATH = PROJECT_ROOT + "/client/files/extra_words.txt"
+
+# word dicts
+DICT_PATH = PROJECT_ROOT + "/client/files/dict/wordsEn.txt"
+EXTRA_DICT_PATH = PROJECT_ROOT + "/client/files/dict/extra_words.txt"
 
 if os.path.exists(EXTRA_DICT_PATH):
     WORDDICT = dictionary.split_dicts([DICT_PATH, EXTRA_DICT_PATH])
 else:    
     WORDDICT = dictionary.split_dict(DICT_PATH)
+
+# logging: guessed words
+CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/client/files/dict/correct_guesses.txt'
+INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/client/files/dict/incorrect_guesses.txt'
 
 # alphabet
 # ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 
@@ -60,6 +67,12 @@ OPTIMIZED_DICT_BOOK = {
    20: ['i', 'a', 'e']
 }
 
+#-------------------------------------------------------------------#
+# score
+
+BEST_SCORE_PATH = PROJECT_ROOT + "/client/files/score/best_score.txt"
+
+#-------------------------------------------------------------------#
 # logging
-CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/client/files/correct_guesses.txt'
-INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/client/files/incorrect_guesses.txt'
+
+SUBMIT_LOG_PATH = PROJECT_ROOT + "/client/files/logs/submit_logs.txt"

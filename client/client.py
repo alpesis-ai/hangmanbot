@@ -13,6 +13,8 @@ import guessword
 import getresult
 
 import log.files
+import log.score
+import log.submit
 
 class HangmanClient(object):
 
@@ -45,8 +47,11 @@ class HangmanClient(object):
         response = requests.post(self.requestUrl, headers=headers, json=params)
         return json.loads(response.text)
 
-    def submit_result(self, sessionId):
-        pass
+    def submit_result(self, sessionId): 
+        headers = {'Content-Type': 'application/json'}
+        params = {'sessionId': sessionId, "action":"submitResult"}
+        response = requests.post(self.requestUrl, headers=headers, json=params)
+        return json.loads(response.text)
     
 
 def main():
@@ -68,18 +73,20 @@ def main():
             word, wordLength, unknownLetters = nextword.next_word(hangman_client, sessionId)
             if unknownLetters > 0:
                 unknownLetters, guessedWord = guessword.guess_word(hangman_client, sessionId, wordLength, unknownLetters)
-                print unknownLetters, guessedWord
+                print "guessedWord: %s" % guessedWord
                 log.files.log_words(guessedWord)
                 if unknownLetters == 0:
                     result = getresult.get_result(hangman_client, session['sessionId'])
                     counter += 1
                     continue
 
-        #best_score = get_best_score()
-        #if result['data']['score'] > bestScore:
-        #    save_score()
-        #    submit_result()
-
+        bestScore = log.score.get_best_score(settings.BEST_SCORE_PATH)
+        if result['data']['score'] > bestScore:
+            log.score.save_best_score(result['data']['score'])
+            submit = hangman_client.submit_result(session['sessionId'])
+            print "submit: %s" % submit
+            log.submit.save_submits(submit)
+   
     else:
         raise session['message']
 
