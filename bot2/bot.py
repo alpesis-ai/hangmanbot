@@ -41,7 +41,7 @@ def main():
         print "=========================================================="
         print "Session: ON"
         print "=========================================================="
-
+        print "Getting a new word..."
         # play a session: nextword + guessword + getresult
         
         # nextword 
@@ -81,14 +81,20 @@ def main():
                 result = hangmanServer.get_result(sessionId)
                 incorrectWordCount = result['data']['totalWordCount'] - result['data']['correctWordCount']
 
-                print "\nGuess: %s, guessedWord: %s, letter: %s" % (str(guessCounter), guess['data']['word'], letter)
-                print "----"
+                print "----------------------------------------------------------"
+                print "sessionId: %s" % sessionId
+                print "wordCounter: %s, Guess: %s, guessedWord: %s" % (wordCounter, str(guessCounter), guess['data']['word'])
+                print "----------------------------------------------------------"
+                print "- letter: %s" % letter
+                print "- guessedLetters: %s" % guessedLetters
+                print "- wrongGuessCountOfCurrentWord: %s" % guess['data']['wrongGuessCountOfCurrentWord']
+                print ""
                 print "Score: %s" % result['data']['score']
                 print "- totalWordCount: %s" % result['data']['totalWordCount']
                 print "- correctWordCount: %s" % result['data']['correctWordCount']
                 print "- incorrectWordCount: %s" % str(incorrectWordCount)
                 print "- totalWrongGuessCount: %s" % result['data']['totalWrongGuessCount']
-                print ""
+                print "----------------------------------------------------------"
 
                 # guessIndex
                 numOfUnknown = guessword.count_unknown(guess['data']['word'])                 

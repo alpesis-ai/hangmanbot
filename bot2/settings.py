@@ -19,8 +19,8 @@ PLAYER_ID = "kwailamchan@hotmail.com"
 # guess
 
 # word dicts
-DICT_PATH = PROJECT_ROOT + "/bot2/files/dict/wordsEn.txt"
-EXTRA_DICT_PATH = PROJECT_ROOT + "/bot2/files/dict/extra_words.txt"
+DICT_PATH = PROJECT_ROOT + "/dicts/wordsEn.txt"
+EXTRA_DICT_PATH = PROJECT_ROOT + "/dicts/extra_words.txt"
 
 if os.path.exists(EXTRA_DICT_PATH):
     WORDDICT = utils.dictionary.split_dicts([DICT_PATH, EXTRA_DICT_PATH])
@@ -28,8 +28,8 @@ else:
     WORDDICT = utils.dictionary.split_dict(DICT_PATH)
 
 # logging: guessed words
-CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/bot2/files/dict/correct_guesses.txt'
-INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/bot2/files/dict/incorrect_guesses.txt'
+CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/dicts/correct_guesses.txt'
+INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/dicts/incorrect_guesses.txt'
 
 # alphabet
 # ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 

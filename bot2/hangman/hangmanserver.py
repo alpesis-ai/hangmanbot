@@ -9,27 +9,32 @@ class HangmanServer(object):
         self.playerId = playerId
 
     def start_game(self):
+        headers = {'Content-Type': 'application/json'}
         params = {'playerId': self.playerId, "action":"startGame"}
-        return _connect_api(self.requestUrl, params)
+        response = requests.post(self.requestUrl, headers=headers, json=params)
+        return json.loads(response.text)
 
     def next_word(self, sessionId):
+
+        headers = {'Content-Type': 'application/json'}
         params = {'sessionId': sessionId, "action":"nextWord"}
-        return _connect_api(self.requestUrl, params)
+        response = requests.post(self.requestUrl, headers=headers, json=params)
+        return json.loads(response.text)
 
     def guess_word(self, sessionId, guess):
+        headers = {'Content-Type': 'application/json'}
         params = {'sessionId': sessionId, "action":"guessWord", "guess": guess}
-        return _connect_api(self.requestUrl, params)
+        response = requests.post(self.requestUrl, headers=headers, json=params)
+        return json.loads(response.text)
 
     def get_result(self, sessionId):
+        headers = {'Content-Type': 'application/json'}
         params = {'sessionId': sessionId, "action":"getResult"}
-        return _connect_api(self.requestUrl, params)
+        response = requests.post(self.requestUrl, headers=headers, json=params)
+        return json.loads(response.text)
 
     def submit_result(self, sessionId):
+        headers = {'Content-Type': 'application/json'}
         params = {'sessionId': sessionId, "action":"submitResult"}
-        return _connect_api(self.requestUrl, params)
-
-
-def _connect_api(requestUrl, params):
-    headers = {'Content-Type': 'application/json'}
-    response = requests.post(requestUrl, headers=headers, json=params)
-    return json.loads(response.text)
+        response = requests.post(self.requestUrl, headers=headers, json=params)
+        return json.loads(response.text)
