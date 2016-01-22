@@ -2,6 +2,7 @@
 Todo
 #########################################
 
+- word root, prefixes and sufixes <- ngram
 - search patterns: guessed book
 - final dictionary = original dictionary + additional words
 - settings: comments
