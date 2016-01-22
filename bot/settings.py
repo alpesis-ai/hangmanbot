@@ -3,33 +3,50 @@ import os.path
 import dicts.worddict
 
 #-------------------------------------------------------------------#
-# Path Settings
+# ROOT SETTINGS
 
 # root path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-#------------------------------------------------------------------#
-# Account Settings
 
-# start game settings
+#-------------------------------------------------------------------#
+# ACCOUNT SETTINGS
+
+# request url and play id
 REQUEST_URL = "https://strikingly-hangman.herokuapp.com/game/on"
 PLAYER_ID = "kwailamchan@hotmail.com"
 
+
 #------------------------------------------------------------------#
-# guess
+# DICTIONARY SETTINGS
 
-# word dicts
-DICT_PATH = PROJECT_ROOT + "/dicts/wordsEn.txt"
-EXTRA_DICT_PATH = PROJECT_ROOT + "/dicts/extra_words.txt"
+# the below dictionaries are used for searching the patterns of
+# the unknown given words
+#
+# - step 1
+#   - (optimized_word_dict) search a vowel for a unknown given word
+# - step 2
+#   - (correct_guesses, incorrect_guesses) search the pattern of a given word
+#   - (dict, extra_dict) search the pattern of a given word
+# - step 3 (pending)
+#   - (word root, suffixes, prefixes) search the subpattern of a given word
 
+
+# external dictionary
+DICT_PATH = PROJECT_ROOT + "/files/dicts/wordsEn.txt"
+# extra words (added by the users)
+EXTRA_DICT_PATH = PROJECT_ROOT + "/files/dicts/extra_words.txt"
+
+# wordDict generated from the external dictionary and custom words
 if os.path.exists(EXTRA_DICT_PATH):
     WORDDICT = dicts.worddict.split_dicts([DICT_PATH, EXTRA_DICT_PATH])
 else:    
     WORDDICT = dicts.worddict.split_dict(DICT_PATH)
 
-# logging: guessed words
-CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/dicts/correct_guesses.txt'
-INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/dicts/incorrect_guesses.txt'
+# words generated from HangmanServer (automatical generation)
+# saving the correct and incorrect guessed words
+CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/files/dicts/correct_guesses.txt'
+INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/files/dicts/incorrect_guesses.txt'
 
 # alphabet
 # ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 
@@ -68,11 +85,8 @@ OPTIMIZED_DICT_BOOK = {
 }
 
 #-------------------------------------------------------------------#
-# score
+# SCORE SETTINGS
 
-BEST_SCORE_PATH = PROJECT_ROOT + "/bot2/files/score/best_score.txt"
+# best score
+BEST_SCORE_PATH = PROJECT_ROOT + "/files/score/best_score.txt"
 
-#-------------------------------------------------------------------#
-# logging
-
-SUBMIT_LOG_PATH = PROJECT_ROOT + "/bot2/files/logs/submit_logs.txt"
