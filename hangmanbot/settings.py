@@ -34,6 +34,7 @@ PLAYER_ID = "kwailamchan@hotmail.com"
 
 
 # external dictionary
+# http://www-01.sil.org/linguistics/wordlists/english/
 DICT_PATH = PROJECT_ROOT + "/files/dicts/wordsEn.txt"
 # extra words (added by the users)
 EXTRA_DICT_PATH = PROJECT_ROOT + "/files/dicts/extra_words.txt"

@@ -1,19 +1,15 @@
 """
 HangmanBot
 ===============================================================================
-
 ---------------
 Game Process
 ---------------
-
                       <LOOP>        <LOOP>
     session starts -> get a word -> guess a letter  -> submit result -> END
                                  -> get this result
-
 ---------------
 Methods
 ---------------
-
     start_game()
         |
         |---> SESSION
@@ -31,10 +27,8 @@ Methods
                    |                    |---> RESULT
                    |---> _submit_score()
                               |---> SUBMIT
-
   NOTE:
   * hangman.guessletter.get_letter(): returns a letter that matching the word
-
 """
 
 import logging
@@ -55,7 +49,7 @@ def start_game(hangmanServer):
     """
 
     session = hangmanServer.start_game()
-    LOG.debug("start_game: created a session, session info: %s." % session)
+    LOG.info("session: %s." % session)
 
     if session['message'] == 'THE GAME IS ON':
         totalWordCount = process_session(hangmanServer, session)
@@ -66,8 +60,9 @@ def start_game(hangmanServer):
             message = session['message']
     else:
         raise session['message']
+        LOG.error("SessionError: message: %s" % message)
 
-    LOG.debug("start_game: returns a message: %s" % message)
+    LOG.info("message: %s" % message)
     return message
 
 
@@ -81,7 +76,7 @@ def process_session(hangmanServer, session):
         LOG.debug("totalWordCount: %s" % totalWordCount)
 
         word = hangmanServer.next_word(session['sessionId'])
-        LOG.debug("word: %s" % word)
+        LOG.info("word: %s" % word)
         numOfGuessAllowed = session['data']['numberOfGuessAllowedForEachWord']
         nextIndex = _guess_word(hangmanServer, word, numOfGuessAllowed)
         if nextIndex:
@@ -118,24 +113,27 @@ def _guess_word(hangmanServer, word, numberOfGuessAllowedForEachWord):
             givenWord = word['data']['word']
             letter = hangman.guessletter.get_letter(givenWord, guessedLetters)
             guess = hangmanServer.guess_word(word['sessionId'], letter.upper())
-            LOG.debug("guess: %s" % guess)
             givenWord = guess['data']['word']
         else:
             letter = hangman.guessletter.get_letter(givenWord, guessedLetters)
             guess = hangmanServer.guess_word(word['sessionId'], letter.upper())
-            LOG.debug("guess: %s" % guess)
             givenWord = guess['data']['word']
         guessedLetters.append(letter)
+        LOG.debug("letter: %s" % letter)
+        LOG.debug("guess: %s" % guess)
+        LOG.debug("givenWord: %s" % givenWord)
+        LOG.info("guessCounter: %s" % guessCounter)
         guessCounter += 1
 
         result = _get_result(hangmanServer, guess['sessionId'])
-        LOG.debug("result: %s" % result)
+        LOG.info("result: %s" % result)
 
         numOfUnknown = hangman.guessletter.count_unknown(guess['data']['word'])
         wrongGuessCount = guess['data']['wrongGuessCountOfCurrentWord']
         if (wrongGuessCount == numberOfGuessAllowedForEachWord) or \
            (numOfUnknown == 0):
             dicts.wordcollector.collect_words(guess['data']['word'])
+            LOG.info("guessedWord: %s" % guess['data']['word'])
             guessIndex = False
 
     if guessIndex is False:

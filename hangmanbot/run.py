@@ -20,8 +20,9 @@ def main():
     LOG.info('Game starts.')
     hangmanServer = hangman.hangmanserver.HangmanServer(settings.REQUEST_URL,
                                                         settings.PLAYER_ID)
-    hangman.hangmanbot.start_game(hangmanServer)
-    LOG.info('Game Ended.')
+    message = hangman.hangmanbot.start_game(hangmanServer)
+    LOG.info('Game ended.')
+
 
 if __name__ == '__main__':
     main()

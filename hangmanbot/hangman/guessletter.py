@@ -2,7 +2,6 @@
 -------------------------------------
 How to select a letter (strategies)
 -------------------------------------
-
     get_letter()
         |
         |---> count_unknown()
@@ -16,7 +15,6 @@ How to select a letter (strategies)
                   |---> _create_letter_pattern() --> _find_ngram()
                   |---> _match_letter_pattern()
                   |---> _select_letter()
-
 """
 
 
@@ -36,10 +34,10 @@ def get_letter(givenWord, guessedLetters):
     numOfUnknown = count_unknown(givenWord)
 
     if numOfUnknown == wordLength:
-        LOG.debug("* searching a vowel...")
+        LOG.info("* searching a vowel...")
         letter = _search_vowels(wordLength, guessedLetters)
     elif numOfUnknown < wordLength:
-        LOG.debug("* searching a pattern...")
+        LOG.info("* searching a pattern...")
         letter = _search_pattern(givenWord, wordLength, guessedLetters)
     else:
         raise "Error"
@@ -70,23 +68,24 @@ def _search_pattern(givenWord, wordLength, guessedLetters):
 
     wordPattern = _create_word_pattern(givenWord, guessedLetters)
     matchedWords = _search_word_pattern(settings.WORDDICT, wordLength, wordPattern)
+    LOG.debug("matchedWords: %s" % matchedWords)
 
     numOfMatchedWords = len(matchedWords)
     if numOfMatchedWords == 0:
-        LOG.debug("matchWords(0): searching ngrams/patterns by a dictionary")
+        LOG.info("matchWords(0): searching ngrams/patterns by a dictionary")
         letterPatterns = _create_letter_pattern(givenWord, guessedLetters)
         matchedLetters = _match_letter_pattern(settings.WORDDICT[wordLength], letterPatterns)
         letter = _select_letter(matchedLetters, guessedLetters)
         return letter
 
     elif numOfMatchedWords == 1:
-        LOG.debug("matchWords(1): return this word")
+        LOG.info("matchWords(1): return this word")
         thisWord = matchedWords[0]
         matchedLetters = [letter for letter in thisWord if letter not in guessedLetters]
         return matchedLetters[0]
 
     elif numOfMatchedWords > 1:
-        LOG.debug("matchWords(>1): searching ngrams/patterns in matchWords")
+        LOG.info("matchWords(>1): searching ngrams/patterns in matchWords")
         letterPatterns = _create_letter_pattern(givenWord, guessedLetters)
         matchedLetters = _match_letter_pattern(matchedWords, letterPatterns)
         letter = _select_letter(matchedLetters, guessedLetters)
@@ -159,9 +158,8 @@ def _match_letter_pattern(matchedWords, letterPatterns):
     """Returns matchedLetters by the letter patterns.
     """
 
-    LOG.debug("matchedWords: %s" % matchedWords)
-    LOG.debug("letterPatterns: %s" % letterPatterns)
-
+    LOG.debug("letterPatterns: %s" % letterPatterns)   
+ 
     matchedLetters = []
     for letterPattern in letterPatterns:
         letterPattern = ".*" + letterPattern + ".*"
@@ -189,6 +187,7 @@ def _select_letter(matchedLetters, guessedLetters):
         else:
             letterFreq[matchedLetter] += 1
     letterFreq = sorted(letterFreq.items(), key=lambda x: x[1], reverse=True)
+    LOG.debug("letterFreq: %s" % letterFreq)
 
     letters = []
     for letter, freq in letterFreq:
