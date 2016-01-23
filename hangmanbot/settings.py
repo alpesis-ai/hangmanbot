@@ -1,3 +1,5 @@
+"""Configuration of hangmanbot."""
+
 import os.path
 
 import dicts.worddict
@@ -7,7 +9,6 @@ import dicts.worddict
 
 # root path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 #-------------------------------------------------------------------#
 # ACCOUNT SETTINGS
@@ -40,7 +41,7 @@ EXTRA_DICT_PATH = PROJECT_ROOT + "/files/dicts/extra_words.txt"
 # wordDict generated from the external dictionary and custom words
 if os.path.exists(EXTRA_DICT_PATH):
     WORDDICT = dicts.worddict.split_dicts([DICT_PATH, EXTRA_DICT_PATH])
-else:    
+else:
     WORDDICT = dicts.worddict.split_dict(DICT_PATH)
 
 # words generated from HangmanServer (automatical generation)
@@ -49,14 +50,14 @@ CORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/files/dicts/correct_guesses.txt'
 INCORRECT_GUESSES_FILEPATH = PROJECT_ROOT + '/files/dicts/incorrect_guesses.txt'
 
 # alphabet
-# ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 
+# ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
 #             'h', 'i', 'j', 'k', 'l', 'm', 'n',
 #             'o', 'p', 'q', 'r', 's', 't', 'u',
 #             'v', 'w', 'x', 'y', 'z']
 # calculating the frequencies from a dictionary
-ALPHABET = ['e', 's', 'i', 'a', 'r', 'n', 't', 
-            'o', 'l', 'c', 'b', 'u', 'g', 'p', 
-            'm', 'h', 'b', 'y', 'f', 'v', 'k', 
+ALPHABET = ['e', 's', 'i', 'a', 'r', 'n', 't',
+            'o', 'l', 'c', 'b', 'u', 'g', 'p',
+            'm', 'h', 'b', 'y', 'f', 'v', 'k',
             'w', 'z', 'x', 'j', 'q']
 
 # optimized_dict_book by vowels
@@ -71,17 +72,17 @@ OPTIMIZED_DICT_BOOK = {
     7: ['e', 'i', 'a', 'o', 'u'],
     8: ['e', 'i', 'a', 'o', 'u'],
     9: ['e', 'i', 'a', 'o', 'u'],
-   10: ['e', 'i', 'a', 'o', 'u'],
-   11: ['e', 'i', 'a', 'o', 'u'],
-   12: ['e', 'i', 'a', 'o', 'u'],
-   13: ['i', 'e', 'a', 'o'],
-   14: ['i', 'e', 'a', 'o'],
-   15: ['i', 'e', 'o', 'a'],
-   16: ['i', 'e', 'o', 'a'],
-   17: ['i', 'e', 'o', 'a'],
-   18: ['i', 'e', 'o', 'a'],
-   19: ['i', 'e', 'a'],
-   20: ['i', 'a', 'e']
+    10: ['e', 'i', 'a', 'o', 'u'],
+    11: ['e', 'i', 'a', 'o', 'u'],
+    12: ['e', 'i', 'a', 'o', 'u'],
+    13: ['i', 'e', 'a', 'o'],
+    14: ['i', 'e', 'a', 'o'],
+    15: ['i', 'e', 'o', 'a'],
+    16: ['i', 'e', 'o', 'a'],
+    17: ['i', 'e', 'o', 'a'],
+    18: ['i', 'e', 'o', 'a'],
+    19: ['i', 'e', 'a'],
+    20: ['i', 'a', 'e']
 }
 
 #-------------------------------------------------------------------#

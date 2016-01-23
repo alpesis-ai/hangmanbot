@@ -2,61 +2,88 @@
 HangmanBot
 ===============================================================================
 
-Game Process:
+---------------
+Game Process
+---------------
+
+                      <LOOP>        <LOOP>
+    session starts -> get a word -> guess a letter  -> submit result -> END
+                                 -> get this result
+
+---------------
+Methods
+---------------
 
     start_game()
         |
-        |---> session: start
+        |---> SESSION
         |---> process_session()
-        |          |--->  word
+        |          |---- WORD
         |          |---> _guess_word()
-        |                     |---> hangman.guessletter.get_letter()
+        |                     |---> letter=hangman.guessletter.get_letter()
+        |                     |---> GUESS
         |                     |---> _get_result()
+        |                               |---> RESULT
         |
         |---> process_result()
-                   |---> _save_score()
+                   |---> _update_best_score()
                    |          |---> _get_result()
+                   |                    |---> RESULT
                    |---> _submit_score()
+                              |---> SUBMIT
+
+  NOTE:
+  * hangman.guessletter.get_letter(): returns a letter that matching the word
+
 """
 
 import logging
+
+import settings
 
 import dicts.wordcollector
 
 import hangman.guessletter
 import hangman.result
 
-log = logging.getLogger('hangmanbot')
+LOG = logging.getLogger('hangmanbot')
 
 
 def start_game(hangmanServer):
+    """(startGame)
+    Starting the game and creating a session.
+    """
 
     session = hangmanServer.start_game()
-    log.debug("start_game: created a session, session info: %s." % session)
+    LOG.debug("start_game: created a session, session info: %s." % session)
 
     if session['message'] == 'THE GAME IS ON':
         totalWordCount = process_session(hangmanServer, session)
 
-        if (totalWordCount == session['data']['numberOfWordsToGuess']):
+        if totalWordCount == session['data']['numberOfWordsToGuess']:
             message = process_result(hangmanServer, session)
         else:
             message = session['message']
     else:
         raise session['message']
 
-    log.debug("start_game: returns a message: %s" % message)
+    LOG.debug("start_game: returns a message: %s" % message)
     return message
 
 
 def process_session(hangmanServer, session):
+    """(nextWord)
+    Getting the words and call the guess process.
+    """
 
     totalWordCount = 1
     while totalWordCount <= session['data']['numberOfWordsToGuess']:
-        log.debug("totalWordCount: %s" % totalWordCount)
+        LOG.debug("totalWordCount: %s" % totalWordCount)
 
         word = hangmanServer.next_word(session['sessionId'])
-        log.debug("word: %s" % word)
-        nextIndex = _guess_word(hangmanServer, word, session['data']['numberOfGuessAllowedForEachWord'])
+        LOG.debug("word: %s" % word)
+        numOfGuessAllowed = session['data']['numberOfGuessAllowedForEachWord']
+        nextIndex = _guess_word(hangmanServer, word, numOfGuessAllowed)
         if nextIndex:
             totalWordCount += 1
 
@@ -64,71 +91,85 @@ def process_session(hangmanServer, session):
 
 
 def process_result(hangmanServer, session):
+    """(getResult/submitResult)
+    Getting the session result and submitting the score.
+    """
 
-    bestScore, thisScore = _save_score(hangmanServer, session)
+    bestScore, thisScore = _update_best_score(hangmanServer, session)
     message = _submit_result(hangmanServer, session, bestScore, thisScore)
 
     return message
 
 #-----------------------------------------------------------------------------#
 
+
 def _guess_word(hangmanServer, word, numberOfGuessAllowedForEachWord):
-    
+    """(guessWord)
+    Guessing the letters of a word and displaying the result of each guess.
+    """
+
     guessCounter = 0
     guessedLetters = []
 
     guessIndex = True
     while guessIndex:
-        
+
         if guessCounter == 0:
-            letter = hangman.guessletter.get_letter(word['data']['word'], guessedLetters)
+            givenWord = word['data']['word']
+            letter = hangman.guessletter.get_letter(givenWord, guessedLetters)
             guess = hangmanServer.guess_word(word['sessionId'], letter.upper())
-            log.debug("guess: %s" % guess)
+            LOG.debug("guess: %s" % guess)
             givenWord = guess['data']['word']
         else:
             letter = hangman.guessletter.get_letter(givenWord, guessedLetters)
             guess = hangmanServer.guess_word(word['sessionId'], letter.upper())
-            log.debug("guess: %s" % guess)
+            LOG.debug("guess: %s" % guess)
             givenWord = guess['data']['word']
         guessedLetters.append(letter)
         guessCounter += 1
 
         result = _get_result(hangmanServer, guess['sessionId'])
-        log.debug("result: %s" % result)
+        LOG.debug("result: %s" % result)
 
         numOfUnknown = hangman.guessletter.count_unknown(guess['data']['word'])
-        if (guess['data']['wrongGuessCountOfCurrentWord'] == numberOfGuessAllowedForEachWord) \
-          or (numOfUnknown == 0):
+        wrongGuessCount = guess['data']['wrongGuessCountOfCurrentWord']
+        if (wrongGuessCount == numberOfGuessAllowedForEachWord) or \
+           (numOfUnknown == 0):
             dicts.wordcollector.collect_words(guess['data']['word'])
             guessIndex = False
 
-
     if guessIndex is False:
         nextIndex = True
-
     return nextIndex
 
-def _save_score(hangmanServer, session):
+
+def _update_best_score(hangmanServer, session):
+    """Updating the bestScore if thisScore > lastBestScore.
+    """
 
     result = _get_result(hangmanServer, session['sessionId'])
     thisScore = result['data']['score']
 
     bestScore = hangman.result.get_bestscore(settings.BEST_SCORE_PATH)
     if thisScore > bestScore:
-        hangman.result.save_bestscore(settings.BEST_SCORE_PATH, str(result['data']['score']))
+        hangman.result.save_bestscore(settings.BEST_SCORE_PATH,
+                                      str(result['data']['score']))
     return bestScore, thisScore
 
+
 def _submit_result(hangmanServer, session, bestScore, thisScore):
-   
+    """(submitResult)
+    Submitting the Result if a user agrees.
+    """
 
-    isSubmitText = """ 
-        bestScore: {0}, thisScore: {1}.\n 
+    isSubmitText = """
+        bestScore: {0}, thisScore: {1}.\n
         Would you like to submit thisScore? (y/n)
-    """.format(str(bestScore), str(result['data']['score']))
+    """.format(str(bestScore), str(thisScore))
 
-    isSubmit = raw_input(isSbumitText)
+    isSubmit = raw_input(isSubmitText)
     if isSubmit == 'y':
-        #submit = 
+        #submit =
         print "Score submitted. Well done!"
     else:
         print "Thank you!"
@@ -136,7 +177,10 @@ def _submit_result(hangmanServer, session, bestScore, thisScore):
     message = "GAME OVER."
     return message
 
+
 def _get_result(hangmanServer, sessionId):
+    """(getResult) Getting the result.
+    """
 
     result = hangmanServer.get_result(sessionId)
     return result
