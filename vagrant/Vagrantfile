@@ -1,0 +1,60 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.require_version ">= 1.6.5"
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise "Please install the vagrant-vbguest plugin by running `vagrant plugin install vagrant-vbguest`"
+end
+
+VAGRANTFILE_API_VERSION = "2"
+
+MEMORY = 4096
+CPU_COUNT = 2
+
+
+hangman_client_mount_dir = "hangman_client"
+
+if ENV['VAGRANT_MOUNT_BASE']
+
+  hangman_client_mount_dir = ENV['VAGRANT_MOUNT_BASE'] + "/" + hangman_client_mount_dir
+
+end
+
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Creates an devstack VM from an official release
+  config.vm.box = 'ubuntu/trusty64'
+
+  config.vm.network :private_network, ip: "192.168.33.10"
+  config.vm.network :forwarded_port, guest: 8000, host: 8000  # docs
+  config.vm.network :forwarded_port, guest: 8001, host: 8001  # backup
+  config.ssh.insert_key = true
+
+  config.vm.synced_folder  ".", "/vagrant", disabled: true
+
+  # Enable X11 forwarding so we can interact with GUI applications
+  if ENV['VAGRANT_X11']
+    config.ssh.forward_x11 = true
+  end
+
+  # Share an additional folder to the guest VM.
+  config.vm.synced_folder "#{hangman_client_mount_dir}", "/hangman/hangman_client/hangman_client",
+    create: true, nfs: true
+
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--memory", MEMORY.to_s]
+    vb.customize ["modifyvm", :id, "--cpus", CPU_COUNT.to_s]
+
+    # Allow DNS to work for Ubuntu 12.10 host
+    # http://askubuntu.com/questions/238040/how-do-i-fix-name-service-for-vagrant-client
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
+
+  # Use vagrant-vbguest plugin to make sure Guest Additions are in sync
+  config.vbguest.auto_reboot = true
+  config.vbguest.auto_update = true
+
+  # We can then tell the Vagrant instance to update itself.
+  # config.vm.provision "shell", inline: $script, args: rel
+end
