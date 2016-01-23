@@ -1,9 +1,12 @@
 import logging
 
+import dicts.wordcollector
+
 import hangman.guessletter
 import hangman.result
 
 log = logging.getLogger('hangmanbot')
+
 
 def start_game(hangmanServer):
 
@@ -14,7 +17,8 @@ def start_game(hangmanServer):
         totalWordCount = process_session(hangmanServer, session)
 
         if (totalWordCount == session['data']['numberOfWordsToGuess']):
-            message = submit_result(hangmanServer, session)
+            bestScore, thisScore = save_score(hangmanServer, session)
+            message = submit_result(hangmanServer, session, bestScore, thisScore)
         else:
             message = session['message']
     else:
@@ -39,24 +43,30 @@ def process_session(hangmanServer, session):
     return totalWordCount
 
 
-def submit_result(hangmanServer, session):
-   
- 
-    bestScore = hangman.result.get_bestscore(settings.BEST_SCORE_PATH)
-    result = _get_result(hangmanServer, session['sessionId'])
-    if result['data']['score'] > bestScore:
-        hangman.result.save_bestscore(settings.BEST_SCORE_PATH, str(result['data']['score']))
+def save_score(hangmanServer, session):
 
-        isSubmitText = """ \
-            bestScore: {0}, thisScore: {1}.\n 
-            Would you like to submit thisScore? (y/n)
-        """.format(str(bestScore), str(result['data']['score']))
-        isSubmit = raw_input(isSbumitText)
-        if isSubmit == 'y':
-            #submit = 
-            print "Score submitted. Well done!"
-        else:
-            print "Thank you!"
+    result = _get_result(hangmanServer, session['sessionId'])
+    thisScore = result['data']['score']
+
+    bestScore = hangman.result.get_bestscore(settings.BEST_SCORE_PATH)
+    if thisScore > bestScore:
+        hangman.result.save_bestscore(settings.BEST_SCORE_PATH, str(result['data']['score']))
+    return bestScore, thisScore
+
+def submit_result(hangmanServer, session, bestScore, thisScore):
+   
+
+    isSubmitText = """ 
+        bestScore: {0}, thisScore: {1}.\n 
+        Would you like to submit thisScore? (y/n)
+    """.format(str(bestScore), str(result['data']['score']))
+
+    isSubmit = raw_input(isSbumitText)
+    if isSubmit == 'y':
+        #submit = 
+        print "Score submitted. Well done!"
+    else:
+        print "Thank you!"
 
     message = "GAME OVER."
     return message
@@ -66,8 +76,9 @@ def submit_result(hangmanServer, session):
 
 def _guess_word(hangmanServer, word, numberOfGuessAllowedForEachWord):
     
-    guessedLetters = []
     guessCounter = 0
+    guessedLetters = []
+
     guessIndex = True
     while guessIndex:
         
@@ -90,6 +101,7 @@ def _guess_word(hangmanServer, word, numberOfGuessAllowedForEachWord):
         numOfUnknown = hangman.guessletter.count_unknown(guess['data']['word'])
         if (guess['data']['wrongGuessCountOfCurrentWord'] == numberOfGuessAllowedForEachWord) \
           or (numOfUnknown == 0):
+            dicts.wordcollector.collect_words(guess['data']['word'])
             guessIndex = False
 
 
