@@ -1,6 +1,9 @@
 import re
+import logging
 
 import settings
+
+log = logging.getLogger('guessletter')
 
 def get_letter(givenWord, guessedLetters):
 
@@ -8,10 +11,10 @@ def get_letter(givenWord, guessedLetters):
     numOfUnknown = count_unknown(givenWord)    
 
     if numOfUnknown == wordLength:
-        print "* searching a vowel..."
+        log.debug("* searching a vowel...")
         letter = _search_vowels(givenWord, wordLength, guessedLetters)
     elif numOfUnknown < wordLength:
-        print "* searching a pattern..."
+        log.debug("* searching a pattern...")
         letter = _search_pattern(givenWord, wordLength, numOfUnknown, guessedLetters)
     else:
         raise "Error" 
@@ -35,20 +38,20 @@ def _search_pattern(givenWord, wordLength, numOfUnknown, guessedLetters):
 
     numOfMatchedWords = len(matchedWords)
     if numOfMatchedWords == 0:
-        print "matchWords(0): searching ngrams/patterns by a dictionary"
+        log.debug("matchWords(0): searching ngrams/patterns by a dictionary")
         letterPatterns = _create_letter_pattern(givenWord, guessedLetters)
         matchedLetters = _match_letter_pattern(settings.WORDDICT[wordLength], letterPatterns)
         letter = _select_letter(matchedLetters, guessedLetters)
         return letter
 
     elif numOfMatchedWords == 1:
-        print "matchWords(1): return this word"
+        log.debug("matchWords(1): return this word")
         thisWord = matchedWords[0]
         matchedLetters = [letter for letter in thisWord if letter not in guessedLetters]
         return matchedLetters[0]
 
     elif numOfMatchedWords > 1:
-        print "matchWords(>1): searching ngrams/patterns in matchWords"
+        log.debug("matchWords(>1): searching ngrams/patterns in matchWords")
         letterPatterns = _create_letter_pattern(givenWord, guessedLetters)
         matchedLetters = _match_letter_pattern(matchedWords, letterPatterns)
         letter = _select_letter(matchedLetters, guessedLetters)
@@ -68,7 +71,7 @@ def _create_word_pattern(givenWord, guessedLetters):
     # pattern: [^iac][^iac]ia[^iac]
     pattern = [subPattern if letter == '*' else letter.lower() for letter in givenWord]
     pattern = ''.join(letter for letter in pattern)
-    print "pattern: %s " % pattern
+    log.debug("pattern: %s " % pattern)
 
     return pattern
 
@@ -107,13 +110,13 @@ def _create_letter_pattern(givenWord, guessedLetters):
 
 def _match_letter_pattern(matchedWords, letterPatterns):
 
-    print "matchedWords: %s" % matchedWords
-    print "letterPatterns: %s" % letterPatterns
+    log.debug("matchedWords: %s" % matchedWords)
+    log.debug("letterPatterns: %s" % letterPatterns)
 
     matchedLetters = []
     for letterPattern in letterPatterns:
         letterPattern = ".*" + letterPattern + ".*"
-        print "letterPattern: %s" % letterPattern
+        log.debug("letterPattern: %s" % letterPattern)
         for matchedWord in matchedWords:
             # print "matchedWord: %s" % matchedWord
             thisMatchedLetter = re.match(letterPattern, matchedWord)
@@ -122,7 +125,7 @@ def _match_letter_pattern(matchedWords, letterPatterns):
                 # print "thisMatchedLetter.group: %s" % thisMatchedLetter.group(1) 
                 matchedLetters.append(thisMatchedLetter.group(1))
    
-    print "matchedLetters: %s" % matchedLetters 
+    log.debug("matchedLetters: %s" % matchedLetters)
     return matchedLetters
 
 def _select_letter(matchedLetters, guessedLetters):

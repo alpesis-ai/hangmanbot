@@ -1,7 +1,8 @@
 import settings
 
-import hangman.hangmanserver as hangmanserver
-import hangman.guessword as guessword
+import hangman.hangmanserver
+import hangman.guessletter
+import hangman.result
 
 import dicts.wordcollector
 
@@ -15,7 +16,7 @@ def main():
 
     requestUrl = settings.REQUEST_URL
     playerId = settings.PLAYER_ID
-    hangmanServer = hangmanserver.HangmanServer(requestUrl, playerId) 
+    hangmanServer = hangman.hangmanserver.HangmanServer(requestUrl, playerId) 
     
     print "Now you are onboard."
     print "Welcome, %s." % playerId
@@ -68,11 +69,11 @@ def main():
 
                 # guessword
                 if guessCounter == 0:
-                    letter = guessword.get_letter(word['data']['word'], guessedLetters)
+                    letter = hangman.guessletter.get_letter(word['data']['word'], guessedLetters)
                     guess = hangmanServer.guess_word(sessionId, letter.upper())
                     givenWord = guess['data']['word']
                 else:
-                    letter = guessword.get_letter(givenWord, guessedLetters)
+                    letter = hangman.guessletter.get_letter(givenWord, guessedLetters)
                     guess = hangmanServer.guess_word(sessionId, letter.upper())
                     givenWord = guess['data']['word']
                 guessedLetters.append(letter)
@@ -99,7 +100,7 @@ def main():
                 print "----------------------------------------------------------"
 
                 # guessIndex
-                numOfUnknown = guessword.count_unknown(guess['data']['word'])                 
+                numOfUnknown = hangman.guessletter.count_unknown(guess['data']['word'])                 
                 if (guess['data']['wrongGuessCountOfCurrentWord'] == numberOfGuessAllowedForEachWord) \
                 or (numOfUnknown == 0):
                     dicts.wordcollector.collect_words(guess['data']['word'])
@@ -111,15 +112,29 @@ def main():
         print "=========================================================="
         print "Session: END"
         print "=========================================================="
-        # display a session score
-        #if totalWordCount == numberOfWordsToGuess:
-        #    score = display_result(hangmanServer, sessionId)
 
-            # submit a session result
-        #    if score >= 1100:
-        #        message = hangmanbot.submit_result(hangmanServer, sessionId)
-        #else:
-            #score = display_result(hangmanServer, sessionId)
+        # score board
+        bestScore = hangman.result.get_bestscore(settings.BEST_SCORE_PATH)
+        
+        print "----------------------------------------------------------"
+        print "Score Board: (best score: %s)" % str(bestScore)
+        print "----------------------------------------------------------"
+        print ""
+        print "sessionScore: %s" % result['data']['score']
+        print "- totalWordCount: %s" % result['data']['totalWordCount']
+        print "- correctWordCount: %s" % result['data']['correctWordCount']
+        print "- incorrectWordCount: %s" % str(incorrectWordCount)
+        print "- totalWrongGuessCount: %s" % result['data']['totalWrongGuessCount'] 
+        print "----------------------------------------------------------"
+
+        if (result['data']['totalWordCount'] == numberOfWordsToGuess) and \
+           (result['data']['score'] > bestScore):
+            hangman.result.save_bestscore(settings.BEST_SCORE_PATH, str(result['data']['score'])) 
+            isSubmit = raw_input("Would you like to submit this score? (y/n)")
+            if isSubmit == 'y':
+                print "Score submitted. Well done!"
+            else:
+                print "Thank you!"
 
     else:
         raise session['message']

@@ -1,0 +1,79 @@
+import logging
+
+import hangman.guessletter
+import hangman.result
+
+log = logging.getLogger('hangmanbot')
+
+def start_game(hangmanServer):
+
+    session = hangmanServer.start_game()
+    log.info("start_game: created a session, session info: %s." % session)
+
+    if session['message'] == 'THE GAME IS ON':
+        totalWordCount = process_session(hangmanServer, session)
+
+        if (totalWordCount == session['data']['numberOfWordsToGuess']):
+            message = submit_result(hangmanServer, session)
+        else:
+            message = session['message']
+    else:
+        raise session['message']
+
+    log.debug("")
+    return message
+
+
+def process_session(hangmanServer, session):
+
+    totalWordCount = 1
+    while totalWordCount <= session['data']['numberOfWordsToGuess']:
+        print "totalWordCount: %s" % totalWordCount
+
+        word = hangmanServer.next_word(session['sessionId'])
+        nextIndex = _guess_word(hangmanServer, word, session['data']['numberOfGuessAllowedForEachWord'])
+        if nextIndex:
+            totalWordCount += 1
+
+    return totalWordCount
+
+
+def submit_result(hangmanServer, session):
+    
+    bestScore = hangman.result.get_bestscore(settings.BEST_SCORE_PATH)
+    
+    pass 
+
+#-----------------------------------------------------------------------------#
+
+
+def _guess_word(hangmanServer, word, numberOfGuessAllowedForEachWord):
+    
+    guessedLetters = []
+    guessCounter = 0
+    guessIndex = True
+    while guessIndex:
+        
+        if guessCounter == 0:
+            letter = hangman.guessletter.get_letter(word['data']['word'], guessedLetters)
+            guess = hangmanServer.guess_word(word['sessionId'], letter.upper())
+            givenWord = guess['data']['word']
+        else:
+            letter = hangman.guessletter.get_letter(givenWord, guessedLetters)
+            guess = hangmanServer.guess_word(word['sessionId'], letter.upper())
+            givenWord = guess['data']['word']
+        guessedLetters.append(letter)
+        guessCounter += 1
+
+        numOfUnknown = hangman.guessletter.count_unknown(guess['data']['word'])
+        if (guess['data']['wrongGuessCountOfCurrentWord'] == numberOfGuessAllowedForEachWord) \
+          or (numOfUnknown == 0):
+            guessIndex = False
+
+
+    if guessIndex is False:
+        nextIndex = True
+
+    return nextIndex
+
+
