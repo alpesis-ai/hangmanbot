@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Hangman Client'
+project = u'HangmanBot'
 copyright = u'2016, Kelly Chan'
 author = u'Kelly Chan'
 
