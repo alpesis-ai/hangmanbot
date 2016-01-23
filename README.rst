@@ -69,12 +69,66 @@ If you would like to read the fully detailed documents, please open the docs ser
 ::
 
     $ cd docs/
+    $ make html
     $ sphinx-autobuild ./ ./_build/html -H 0.0.0.0
 
 Then open ``http://localhost:8000`` on a browser.
 
 -----------------------
 Algorithms
+-----------------------
+
+From the game flow, we can find the game patterns:
+
+Score Calculation
+
+::
+
+    scoreOfEachWord = 20 - incorrectGuessCount
+
+If you want to get a higher score, it means you must improve the correctness of each guess.
+The correctness of each guess is the letter, this letter is in a word, then we can try to
+figure out the letter patterns in the words.
+
+
+English Word Elements
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Rules:
+
+- Each Word (most of the words) = prefix + word root + sufix.
+- Word Root = vowel + consonant
+
+Strategy of Letter Selection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Steps:
+
+1. find a dictionary
+2. count the unknown letters of a given word
+3. (guess) fill in a vowel
+4. (guess) search the word pattern in a dictionary, get matchedWords
+5. (guess) search the letter patterns in a word, select a letter (excluded guessedLetters)
+
+
+::
+
+       get_letter()
+            |
+            |---> count_unknown()
+            |
+            |---> _search_vowels()
+            |---> _search_pattern()
+                      |
+                      |---> _create_word_pattern()
+                      |---> _search_word_pattern()
+                      |
+                      |---> _create_letter_pattern() --> _find_ngram()
+                      |---> _match_letter_pattern()
+                      |---> _select_letter()
+
+-----------------------
+Game Flow
 -----------------------
 
 Game Flow (``./hangmanbot/hangman/hangmanbot.py``)
@@ -117,7 +171,6 @@ Letter Selection (``./hangmanbot/hangman/guessletter.py``)
                    |---> _create_letter_pattern() --> _find_ngram()
                    |---> _match_letter_pattern()
                    |---> _select_letter()
-
 
 ----------------------
 Folder Structure
@@ -171,3 +224,11 @@ Development Toolkits
  Docs     sphinx, sphinx-autobuild
  DevOps   Makefile
 ========= ===========================
+
+-----------------------
+Todo
+-----------------------
+
+
+- algorithm improvement (time/space)
+- performance analyzer
