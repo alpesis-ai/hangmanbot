@@ -93,4 +93,4 @@ BEST_SCORE_PATH = PROJECT_ROOT + "/files/score/best_score.txt"
 #-------------------------------------------------------------------#
 # LOGGING
 
-LOGGING_CONF_PATH = PROJECT_ROOT + "/bot/conf/logging.conf"
+LOGGING_CONF_PATH = PROJECT_ROOT + "/hangmanbot/conf/logging.conf"
