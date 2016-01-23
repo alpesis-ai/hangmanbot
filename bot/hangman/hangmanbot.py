@@ -45,18 +45,19 @@ def submit_result(hangmanServer, session):
     bestScore = hangman.result.get_bestscore(settings.BEST_SCORE_PATH)
     result = _get_result(hangmanServer, session['sessionId'])
     if result['data']['score'] > bestScore:
-        hangman.result.save_bestscore(settings.BEST_SCORE_PATH, str(result['data']['score'])
+        hangman.result.save_bestscore(settings.BEST_SCORE_PATH, str(result['data']['score']))
 
-        isSubmitText = """
-            BestScore: %s, thisScore: %s.\n 
+        isSubmitText = """ \
+            bestScore: {0}, thisScore: {1}.\n 
             Would you like to submit thisScore? (y/n)
-        """ 
-        isSubmit = raw_input("Would you like to submit this score? (y/n)")
+        """.format(str(bestScore), str(result['data']['score']))
+        isSubmit = raw_input(isSbumitText)
         if isSubmit == 'y':
             #submit = 
             print "Score submitted. Well done!"
         else:
             print "Thank you!"
+
     message = "GAME OVER."
     return message
 
