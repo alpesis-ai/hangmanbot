@@ -25,3 +25,23 @@ Devstack
     $ cd docs
     $ sphinx-quickstart
     $ sphinx-autobuild ./ _build/html
+
+
+*******************
+Makefile
+*******************
+
+Run Hangmanbot
+
+::
+
+    $ make develop
+    $ make hangmanbot.run
+
+Development
+
+::
+
+    $ make develop
+    $ make tests
+    $ make quality
