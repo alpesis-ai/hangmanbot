@@ -37,7 +37,8 @@ Prequisitions
 - Ubuntu 14.04
 - Python 2.7.x
 
-Setup
+Setup in Vagrant/VirtualBox/Ubuntu
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -64,6 +65,7 @@ Setup
     $ cd /path/to/hangmanbot
     $ python -m run
 
+
 If you would like to read the fully detailed documents, please open the docs server.
 
 ::
@@ -73,6 +75,24 @@ If you would like to read the fully detailed documents, please open the docs ser
     $ sphinx-autobuild ./ ./_build/html -H 0.0.0.0
 
 Then open ``http://localhost:8000`` on a browser.
+
+Makefile
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Alternatively, ``Makefile`` also would be helpful.
+
+Run the hangmanbot:
+
+::
+
+    $ make develop
+    $ make hangmanbot.run
+
+Run tests
+
+::
+
+    $ make tests 
 
 -----------------------
 Algorithms
