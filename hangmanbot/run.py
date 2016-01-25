@@ -2,6 +2,7 @@
 HangmanBot Starts.
 """
 
+import argparse
 import logging
 import logging.config
 
@@ -14,7 +15,20 @@ logging.config.fileConfig(settings.LOGGING_CONF_PATH)
 LOG = logging.getLogger('root')
 
 
-def main():
+def create_args():
+    """Creating arguments."""
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--sessions', type=int,
+                                      default=1,
+                                      help='# of sessions to run hangmanbot')
+
+    args = parser.parse_args()
+    return args
+
+
+def run():
     """Start a game."""
 
     LOG.info('Game starts.')
@@ -25,4 +39,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+
+    args = create_args() 
+    for session in range(args.sessions):
+        run()
