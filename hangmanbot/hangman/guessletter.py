@@ -21,7 +21,7 @@ How to select a letter (strategies)
 import re
 import logging
 
-import settings
+import settings.settings as settings
 
 LOG = logging.getLogger('guessletter')
 

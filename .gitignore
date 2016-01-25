@@ -1,5 +1,5 @@
 docs/_build
-hangmanbot.settings.py
+hangmanbot/settings/private.py
 
 .DS_Store
 *.swo

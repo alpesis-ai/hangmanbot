@@ -11,6 +11,7 @@ v0.3.x
 
 - feature
   - added logging
+  - added settings: splitted environments
 - coding
   - refactored the abstractions of game flow
   - passed pep8 and pylint tests

@@ -33,7 +33,7 @@ Methods
 
 import logging
 
-import settings
+import settings.settings as settings
 
 import dicts.wordcollector
 

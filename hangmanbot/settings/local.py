@@ -4,11 +4,7 @@ import os.path
 
 import dicts.worddict
 
-#-------------------------------------------------------------------#
-# ROOT SETTINGS
-
-# root path
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from .base import *
 
 #-------------------------------------------------------------------#
 # ACCOUNT SETTINGS

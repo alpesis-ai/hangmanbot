@@ -4,7 +4,7 @@ Collecting the guessedWords.
 
 import os.path
 
-import settings
+import settings.settings as settings
 
 
 def collect_words(guessedWord):

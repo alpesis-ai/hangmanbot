@@ -5,7 +5,7 @@ HangmanBot Starts.
 import logging
 import logging.config
 
-import settings
+import settings.settings as settings
 
 import hangman.hangmanserver
 import hangman.hangmanbot
